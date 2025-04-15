@@ -206,7 +206,7 @@ export default {
             },
             errors: {},
             newImage: null, // Để lưu file ảnh mới nếu người dùng upload
-            baseUrl: import.meta.env.VITE_API_URL || 'https://www.erp.plt.pro.vn/', // Thêm baseUrl cho API
+            baseUrl: import.meta.env.VITE_API_URL || 'https://www.erp.plt.pro.vn', // Thêm baseUrl cho API
             departments: [],
             positions: []
         };
