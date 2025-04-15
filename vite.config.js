@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://www.erp.plt.pro.vn", // URL API Laravel
+        target: "https://www.erp.plt.pro.vn/", // URL API Laravel
         changeOrigin: true,
         secure: false,
       },
