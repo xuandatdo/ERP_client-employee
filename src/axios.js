@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = "https://www.erp.plt.pro.vn/";
 axios.defaults.withCredentials = true;
 
 export default axios;
