@@ -29,8 +29,7 @@
                     <tr v-for="employee in paginatedEmployees" :key="employee.id">
                         <td>{{ "NV" + employee.id }}</td>
                         <td>
-                            <img v-if="employee.profile_image" :src="'/storage/' + employee.profile_image" alt="Profile"
-                                class="profile-img">
+                            <img v-if="employee.profile_image" :src="'https://www.erp.plt.pro.vn/storage/' + employee.profile_image" alt="Profile" class="profile-img">
                             <span v-else>Không có ảnh</span>
                         </td>
                         <td>{{ truncate(employee.name, 20) }}</td>
