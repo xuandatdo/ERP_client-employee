@@ -86,16 +86,18 @@ export default {
             return this.employees.filter(employee => {
                 const employeeId = `nv${employee.id}`.toLowerCase();
                 const employeeName = employee.name.toLowerCase();
-                const employeeDepartment = employee.department.toLowerCase();
-                const employeePosition = employee.position.toLowerCase();
-                const employeeEducationLevel = employee.education_level.toLowerCase(); // Thêm tìm kiếm theo Trình độ
+                const employeeDepartment = employee.department_name.toLowerCase();
+                const employeePosition = employee.position_name.toLowerCase();
+                const employeeEducationLevel = employee.education_level.toLowerCase();
+                const employeeSalaryType = employee.salary_type.toLowerCase();
 
                 return (
                     employeeId.includes(query) ||
                     employeeName.includes(query) ||
                     employeeDepartment.includes(query) ||
                     employeePosition.includes(query) ||
-                    employeeEducationLevel.includes(query) // Tìm kiếm theo Trình độ
+                    employeeEducationLevel.includes(query) ||
+                    employeeSalaryType.includes(query)
                 );
             });
         },
