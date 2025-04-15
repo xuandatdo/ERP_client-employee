@@ -12,7 +12,7 @@ export default defineConfig({
       },
       "/storage": {
         // Thêm proxy cho /storage
-        target: "https://www.erp.plt.pro.vn",
+        target: "https://www.erp.plt.pro.vn/",
         changeOrigin: true,
         secure: false,
       },
