@@ -5,42 +5,41 @@
             <router-link to="/departments/create" class="btn btn-primary">Thêm phòng ban mới</router-link>
         </div>
 
-        <div class="search-wrapper">
-            <!-- Search form content -->
-        </div>
-
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên phòng ban</th>
-                        <th>Mô tả</th>
-                        <th>Số vị trí</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="department in paginatedDepartments" :key="department.id">
-                        <td>{{ department.id }}</td>
-                        <td>{{ department.name }}</td>
-                        <td>{{ department.description }}</td>
-                        <td>{{ department.positions ? department.positions.length : 0 }}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <router-link :to="`/positions?department=${department.id}`"
-                                    class="btn btn-sm btn-info">Xem</router-link>
-                                <router-link :to="`/departments/${department.id}/edit`"
-                                    class="btn btn-sm btn-edit btn-primary">Sửa</router-link>
-                                <button @click="confirmDelete(department)" class="btn btn-sm btn-danger">Xóa</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr v-if="departments.length === 0">
-                        <td colspan="5" class="text-center">Không có phòng ban nào</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="table-wrapper">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên phòng ban</th>
+                            <th>Mô tả</th>
+                            <th>Số vị trí</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="department in paginatedDepartments" :key="department.id">
+                            <td>{{ department.id }}</td>
+                            <td>{{ department.name }}</td>
+                            <td>{{ department.description }}</td>
+                            <td>{{ department.positions ? department.positions.length : 0 }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <router-link :to="`/positions?department=${department.id}`"
+                                        class="btn btn-sm btn-info">Xem</router-link>
+                                    <router-link :to="`/departments/${department.id}/edit`"
+                                        class="btn btn-sm btn-edit btn-primary">Sửa</router-link>
+                                    <button @click="confirmDelete(department)"
+                                        class="btn btn-sm btn-danger">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="departments.length === 0">
+                            <td colspan="5" class="text-center">Không có phòng ban nào</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Phân trang -->
@@ -158,6 +157,7 @@ export default {
 
 <style scoped>
 .container {
+    max-width: 83vw;
     padding: 20px;
 }
 
@@ -168,15 +168,7 @@ export default {
     margin-bottom: 20px;
 }
 
-.search-wrapper {
-    position: relative;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.table-responsive {
+.table-wrapper {
     position: relative;
     margin-top: 20px;
     overflow-x: auto;
@@ -212,7 +204,7 @@ export default {
     border-bottom: 2px solid #dee2e6;
 }
 
-.table tbody tr:hover {
+.table tr:hover {
     background-color: #f5f5f5;
 }
 
@@ -361,6 +353,12 @@ export default {
     .modal-content {
         width: 90%;
     }
+}
+
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
 }
 
 .pagination {
