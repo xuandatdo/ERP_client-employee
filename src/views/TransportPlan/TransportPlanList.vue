@@ -42,9 +42,15 @@
                         <td>{{ plan.driver_phone }}</td>
                         <td>{{ formatDateTime(plan.expected_time) }}</td>
                         <td>
-                            <span :class="['status-badge', getStatusClass(plan.status)]">
-                                {{ getStatusText(plan.status) }}
-                            </span>
+                            <div class="status-wrapper">
+                                <select v-model="plan.status" @change="updateStatus(plan.id, plan.status)"
+                                    :class="['status-select', getStatusClass(plan.status)]">
+                                    <option value="preparing">Đang chuẩn bị</option>
+                                    <option value="in_transit">Đang vận chuyển</option>
+                                    <option value="completed">Hoàn thành</option>
+                                    <option value="delayed">Chậm trễ</option>
+                                </select>
+                            </div>
                         </td>
                         <td>{{ truncate(plan.delivery_location, 15) }}</td>
                         <td>{{ truncate(plan.pickup_location, 15) }}</td>
@@ -102,7 +108,7 @@ export default {
                 date: '',
             },
             currentPage: 1,
-            itemsPerPage: 5,
+            itemsPerPage: 10,
             showDeleteModal: false,
             planToDelete: null,
         };
@@ -136,9 +142,7 @@ export default {
 
                 const matchesStatus = !this.filters.status || plan.status === this.filters.status;
 
-                const matchesDate =
-                    !this.filters.date ||
-                    new Date(plan.expected_time).toISOString().split('T')[0] === this.filters.date;
+                const matchesDate = !this.filters.date || this.isSameDate(plan.expected_time, this.filters.date);
 
                 return matchesSearch && matchesStatus && matchesDate;
             });
@@ -202,13 +206,21 @@ export default {
         },
         formatDateTime(datetime) {
             if (!datetime) return '';
-            const date = new Date(datetime);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
+            try {
+                const date = new Date(datetime);
+                if (isNaN(date.getTime())) return ''; // Invalid date
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return '';
+            }
         },
         getStatusText(status) {
             const statusMap = {
@@ -237,6 +249,47 @@ export default {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
             }
+        },
+        async updateStatus(planId, newStatus) {
+            try {
+                const response = await axios.patch(`/api/transport-plans/${planId}`, {
+                    _method: 'PATCH',
+                    status: newStatus,
+                    ...this.transportPlans.find(plan => plan.id === planId)
+                });
+
+                if (response.data.success) {
+                    this.toast.success('Cập nhật trạng thái thành công!');
+                    await this.loadTransportPlans();
+                }
+            } catch (error) {
+                console.error('Lỗi khi cập nhật trạng thái:', error);
+
+                if (error.response && error.response.status === 422) {
+                    const validationErrors = error.response.data.errors;
+                    let errorMessage = 'Lỗi validation: ';
+
+                    if (validationErrors) {
+                        errorMessage += Object.values(validationErrors).flat().join(', ');
+                    }
+
+                    this.toast.error(errorMessage);
+                } else {
+                    this.toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
+                }
+
+                await this.loadTransportPlans();
+            }
+        },
+        isSameDate(dateTime1, dateTime2) {
+            if (!dateTime1 || !dateTime2) return false;
+
+            const date1 = new Date(dateTime1);
+            const date2 = new Date(dateTime2);
+
+            return date1.getFullYear() === date2.getFullYear() &&
+                date1.getMonth() === date2.getMonth() &&
+                date1.getDate() === date2.getDate();
         },
     },
 };
@@ -548,5 +601,53 @@ function debounce(fn, delay) {
 
 .btn-danger:hover {
     background-color: #c82333;
+}
+
+.status-wrapper {
+    position: relative;
+}
+
+.status-select {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+.status-select.preparing {
+    background-color: #ffc107;
+}
+
+.status-select.in_transit {
+    background-color: #17a2b8;
+}
+
+.status-select.completed {
+    background-color: #28a745;
+}
+
+.status-select.delayed {
+    background-color: #dc3545;
+}
+
+.status-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.status-wrapper::after {
+    content: '▼';
+    font-size: 12px;
+    color: white;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 </style>
