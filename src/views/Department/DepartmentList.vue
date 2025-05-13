@@ -5,6 +5,10 @@
             <router-link to="/departments/create" class="btn btn-primary">Thêm phòng ban mới</router-link>
         </div>
 
+        <div class="search-wrapper">
+            <!-- Search form content -->
+        </div>
+
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -164,26 +168,52 @@ export default {
     margin-bottom: 20px;
 }
 
+.search-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-responsive {
+    position: relative;
+    margin-top: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
 .table {
     width: 100%;
+    min-width: 800px;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
 }
 
 .table th,
 .table td {
     padding: 12px 15px;
-    border: 1px solid #ddd;
     text-align: left;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.table th:last-child,
+.table td:last-child {
+    border-right: none;
 }
 
 .table th {
     background-color: #f8f9fa;
+    color: black;
     font-weight: bold;
+    border-bottom: 2px solid #dee2e6;
 }
 
 .table tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f5f5f5;
 }
 
 .action-buttons {
@@ -331,12 +361,6 @@ export default {
     .modal-content {
         width: 90%;
     }
-}
-
-.table-responsive {
-    overflow-x: auto;
-    margin-bottom: 1rem;
-    -webkit-overflow-scrolling: touch;
 }
 
 .pagination {
