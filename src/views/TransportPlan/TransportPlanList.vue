@@ -65,10 +65,14 @@
             <div v-else class="no-data">Không có kế hoạch vận chuyển nào</div>
         </div>
 
-        <div class="pagination" v-if="totalPages > 1">
-            <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-page">Trang trước</button>
+        <div class="pagination">
+            <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-page">
+                Trang trước
+            </button>
             <span>Trang {{ currentPage }} / {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn btn-page">Trang sau</button>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn btn-page">
+                Trang sau
+            </button>
         </div>
 
         <!-- Modal xác nhận xóa -->
@@ -166,12 +170,22 @@ export default {
         'filters.date'() {
             this.currentPage = 1;
         },
+        totalPages(newVal) {
+            if (this.currentPage > newVal && newVal > 0) {
+                this.currentPage = newVal;
+            }
+        }
     },
     methods: {
         async loadTransportPlans() {
             try {
                 const response = await axios.get('/api/transport-plans');
                 this.transportPlans = response.data.data;
+
+                // Kiểm tra và điều chỉnh trang hiện tại nếu cần
+                if (this.totalPages > 0 && this.currentPage > this.totalPages) {
+                    this.currentPage = this.totalPages;
+                }
             } catch (error) {
                 console.error('Lỗi khi tải danh sách kế hoạch vận chuyển:', error);
                 this.toast.error('Có lỗi xảy ra khi tải danh sách');
@@ -189,14 +203,40 @@ export default {
             if (!this.planToDelete) return;
 
             try {
-                await axios.delete(`/api/transport-plans/${this.planToDelete.id}`);
+                const response = await axios.delete(`/api/transport-plans/${this.planToDelete.id}`);
+
+                // Kiểm tra nếu là item cuối cùng của trang và không phải trang 1
+                const isLastItemOfPage = this.paginatedPlans.length === 1 && this.currentPage > 1;
+
+                await this.loadTransportPlans();
+
+                // Nếu là item cuối cùng và xóa thành công, chuyển về trang trước
+                if (isLastItemOfPage) {
+                    this.currentPage--;
+                }
+
                 this.toast.success('Xóa kế hoạch vận chuyển thành công!');
-                this.loadTransportPlans();
                 this.showDeleteModal = false;
                 this.planToDelete = null;
             } catch (error) {
                 console.error('Lỗi khi xóa kế hoạch vận chuyển:', error);
-                this.toast.error('Có lỗi xảy ra khi xóa kế hoạch vận chuyển');
+
+                let errorMessage = 'Có lỗi xảy ra khi xóa kế hoạch vận chuyển';
+
+                if (error.response) {
+                    console.log('Error status:', error.response.status);
+                    console.log('Error data:', error.response.data);
+
+                    if (error.response.status === 403) {
+                        errorMessage = 'Bạn không có quyền xóa kế hoạch vận chuyển này';
+                    } else if (error.response.status === 409) {
+                        errorMessage = 'Không thể xóa: Kế hoạch vận chuyển đang được sử dụng';
+                    } else if (error.response.data && error.response.data.message) {
+                        errorMessage = error.response.data.message;
+                    }
+                }
+
+                this.toast.error(errorMessage);
                 this.showDeleteModal = false;
             }
         },
@@ -243,11 +283,13 @@ export default {
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
+                console.log('Chuyển đến trang:', this.currentPage);
             }
         },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
+                console.log('Chuyển đến trang:', this.currentPage);
             }
         },
         async updateStatus(planId, newStatus) {
@@ -488,6 +530,11 @@ function debounce(fn, delay) {
 
 .btn-page:hover:not(:disabled) {
     background-color: #0056b3;
+}
+
+span {
+    font-size: 16px;
+    margin: 0 10px;
 }
 
 .no-data {
