@@ -22,14 +22,14 @@
             <table class="transport-table" v-if="paginatedPlans.length > 0">
                 <thead>
                     <tr>
-                        <th>Mã lô hàng</th>
-                        <th>Biển số</th>
-                        <th>Tài xế</th>
-                        <th>Số điện thoại</th>
+                        <th>Mã LH</th>
+                        <th>Biển số xe</th>
+                        <th>Tên tài xế</th>
+                        <th>SĐT tài xế</th>
                         <th>Thời gian dự kiến</th>
                         <th>Trạng thái</th>
-                        <th>Địa điểm giao</th>
-                        <th>Địa điểm nhận</th>
+                        <th>Điểm giao hàng</th>
+                        <th>Điểm lấy hàng</th>
                         <th>Số lượng</th>
                         <th>Thao tác</th>
                     </tr>
